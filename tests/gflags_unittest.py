@@ -38,6 +38,7 @@ import io
 import sys
 import os
 import shutil
+import tempfile
 
 import gflags
 from flags_modules_for_testing import module_foo
@@ -922,17 +923,16 @@ class LoadFromFlagFileTest(googletest.TestCase):
                       flag_values=self.flag_values)
     self.files_to_delete = []
 
+    # Figure out where to create temporary files
+    self.tmp_path = tempfile.mkdtemp(prefix='gflags_unittest')
+
   def tearDown(self):
     self._RemoveTestFiles()
 
   def _SetupTestFiles(self):
     """ Creates and sets up some dummy flagfile files with bogus flags"""
 
-    # Figure out where to create temporary files
-    tmp_path = '/tmp/flags_unittest'
-    if os.path.exists(tmp_path):
-      shutil.rmtree(tmp_path)
-    os.makedirs(tmp_path)
+    tmp_path = self.tmp_path
 
     try:
       tmp_flag_file_1 = open(tmp_path + '/UnitTestFile1.tst', 'w')
@@ -988,6 +988,7 @@ class LoadFromFlagFileTest(googletest.TestCase):
         os.remove(file_name)
       except OSError as e_msg:
         print('%s\n, Problem deleting test file' % e_msg)
+    shutil.rmtree(self.tmp_path)
   #end RemoveTestFiles def
 
   def _ReadFlagsFromFiles(self, argv, force_gnu):
