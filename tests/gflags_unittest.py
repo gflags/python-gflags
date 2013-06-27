@@ -1127,6 +1127,9 @@ class LoadFromFlagFileTest(googletest.TestCase):
 
   def testMethod_flagfiles_NoPermissions(self):
     """Test that --flagfile raises except on file that is unreadable."""
+    # This test doesn't work as root
+    if os.getuid() == 0:
+        return
     tmp_files = self._SetupTestFiles()
     # specify our temp file on the fake cmd line
     fake_cmd_line = ('fooScript --SomeFlag some_arg --flagfile=%s'
