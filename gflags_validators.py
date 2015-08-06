@@ -34,6 +34,7 @@
 A validator represents an invariant, enforced over a one or more flags.
 See 'FLAGS VALIDATORS' in gflags.py's docstring for a usage manual.
 """
+from builtins import object
 
 __author__ = 'olexiy@google.com (Olexiy Oryeshko)'
 

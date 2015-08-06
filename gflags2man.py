@@ -38,6 +38,10 @@ page.
 Usage:
   gflags2man <program> [program] ...
 """
+from __future__ import print_function
+from builtins import str
+from builtins import range
+from builtins import object
 
 # TODO(csilvers): work with windows paths (\) as well as unix (/)
 
@@ -79,20 +83,20 @@ gflags.DEFINE_integer('v', 0, 'verbosity level to use for output')
 _MIN_VALID_USAGE_MSG = 9         # if fewer lines than this, help is suspect
 
 
-class Logging:
+class Logging(object):
   """A super-simple logging class"""
-  def error(self, msg): print >>sys.stderr, "ERROR: ", msg
-  def warn(self, msg): print >>sys.stderr, "WARNING: ", msg
-  def info(self, msg): print msg
+  def error(self, msg): print("ERROR: ", msg, file=sys.stderr)
+  def warn(self, msg): print("WARNING: ", msg, file=sys.stderr)
+  def info(self, msg): print(msg)
   def debug(self, msg): self.vlog(1, msg)
   def vlog(self, level, msg):
-    if FLAGS.v >= level: print msg
+    if FLAGS.v >= level: print(msg)
 logging = Logging()
-class App:
+class App(object):
   def usage(self, shorthelp=0):
-    print >>sys.stderr, __doc__
-    print >>sys.stderr, "flags:"
-    print >>sys.stderr, str(FLAGS)
+    print(__doc__, file=sys.stderr)
+    print("flags:", file=sys.stderr)
+    print(str(FLAGS), file=sys.stderr)
   def run(self):
     main(sys.argv)
 app = App()
