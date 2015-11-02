@@ -34,8 +34,8 @@
 __author__ = 'salcianu@google.com (Alex Salcianu)'
 
 
+import io
 import string
-import StringIO
 import sys
 import xml.dom.minidom
 import xml.sax.saxutils
@@ -95,11 +95,11 @@ class WriteFlagHelpInXMLFormatTest(googletest.TestCase):
 
   def _CheckFlagHelpInXML(self, flag_name, module_name,
                           expected_output, is_key=False):
-    # StringIO.StringIO is a file object that writes into a memory string.
-    sio = StringIO.StringIO()
+    # io.BytesIO is a file object that writes into a memory string.
+    sio = io.BytesIO()
     flag_obj = self.fv[flag_name]
     flag_obj.WriteInfoInXMLFormat(sio, module_name, is_key=is_key, indent=' ')
-    self.assertMultiLineEqual(sio.getvalue(), expected_output)
+    self.assertMultiLineEqual(sio.getvalue().decode('ascii'), expected_output)
     sio.close()
 
   def testFlagHelpInXML_Int(self):
@@ -250,6 +250,7 @@ class WriteFlagHelpInXMLFormatTest(googletest.TestCase):
         ' </flag>\n').replace('LIST_SEPARATORS',
                               _ListSeparatorsInXMLFormat(string.whitespace,
                                                          indent='   '))
+    # TODO: Why is Python 3 returning a different sort order here?
     self._CheckFlagHelpInXML('dirs', 'tool', expected_output)
 
   def testFlagHelpInXML_MultiString(self):
@@ -296,14 +297,14 @@ class WriteFlagHelpInXMLFormatTest(googletest.TestCase):
 # already know the ordering between the main module and module_bar.
 # However, there is no guarantee that _GetMainModule will never be
 # changed in the future (especially since it's far from perfect).
-EXPECTED_HELP_XML_START = """\
+EXPECTED_HELP_XML_START = u"""\
 <?xml version="1.0"?>
 <AllFlags>
   <program>gflags_helpxml_test.py</program>
   <usage>%(usage_doc)s</usage>
 """
 
-EXPECTED_HELP_XML_FOR_FLAGS_FROM_MAIN_MODULE = """\
+EXPECTED_HELP_XML_FOR_FLAGS_FROM_MAIN_MODULE = u"""\
   <flag>
     <key>yes</key>
     <file>%(main_module_name)s</file>
@@ -404,7 +405,7 @@ EXPECTED_HELP_XML_FOR_FLAGS_FROM_MAIN_MODULE = """\
   </flag>
 """
 
-EXPECTED_HELP_XML_FOR_FLAGS_FROM_MODULE_BAR = """\
+EXPECTED_HELP_XML_FOR_FLAGS_FROM_MODULE_BAR = u"""\
   <flag>
     <file>%(module_bar_name)s</file>
     <name>tmod_bar_t</name>
@@ -457,7 +458,7 @@ EXPECTED_HELP_XML_FOR_FLAGS_FROM_MODULE_BAR = """\
   </flag>
 """
 
-EXPECTED_HELP_XML_END = """\
+EXPECTED_HELP_XML_END = u"""\
 </AllFlags>
 """
 
@@ -495,8 +496,8 @@ class WriteHelpInXMLFormatTest(googletest.TestCase):
     gflags.DECLARE_key_flag('tmod_bar_z', flag_values=fv)
     gflags.DECLARE_key_flag('tmod_bar_u', flag_values=fv)
 
-    # Generate flag help in XML format in the StringIO sio.
-    sio = StringIO.StringIO()
+    # Generate flag help in XML format in the io.BytesIO sio.
+    sio = io.BytesIO()
     fv.WriteHelpInXMLFormat(sio)
 
     # Check that we got the expected result.
@@ -514,6 +515,7 @@ class WriteHelpInXMLFormatTest(googletest.TestCase):
     expected_output_template += EXPECTED_HELP_XML_END
 
     # XML representation of the whitespace list separators.
+    # TODO: Why is Python 3 returning a different sort order here?
     whitespace_separators = _ListSeparatorsInXMLFormat(string.whitespace,
                                                        indent='    ')
     expected_output = (
@@ -523,7 +525,7 @@ class WriteHelpInXMLFormatTest(googletest.TestCase):
          'module_bar_name': module_bar_name,
          'whitespace_separators': whitespace_separators})
 
-    actual_output = sio.getvalue()
+    actual_output = sio.getvalue().decode('ascii')
     self.assertMultiLineEqual(actual_output, expected_output)
 
     # Also check that our result is valid XML.  minidom.parseString

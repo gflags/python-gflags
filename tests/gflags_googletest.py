@@ -49,10 +49,10 @@ def MultiLineEqual(expected, actual):
   if actual == expected:
     return True
 
-  print "Error: FLAGS.MainModuleHelp() didn't return the expected result."
-  print "Got:"
-  print actual
-  print "[End of got]"
+  print("Error: FLAGS.MainModuleHelp() didn't return the expected result.")
+  print("Got:")
+  print(actual)
+  print("[End of got]")
 
   actual_lines = actual.split("\n")
   expected_lines = expected.split("\n")
@@ -61,28 +61,28 @@ def MultiLineEqual(expected, actual):
   num_expected_lines = len(expected_lines)
 
   if num_actual_lines != num_expected_lines:
-    print "Number of actual lines = %d, expected %d" % (
-        num_actual_lines, num_expected_lines)
+    print("Number of actual lines = %d, expected %d" % (
+        num_actual_lines, num_expected_lines))
 
   num_to_match = min(num_actual_lines, num_expected_lines)
 
   for i in range(num_to_match):
     if actual_lines[i] != expected_lines[i]:
-      print "One discrepancy: Got:"
-      print actual_lines[i]
-      print "Expected:"
-      print expected_lines[i]
+      print("One discrepancy: Got:")
+      print(actual_lines[i])
+      print("Expected:")
+      print(expected_lines[i])
       break
   else:
     # If we got here, found no discrepancy, print first new line.
     if num_actual_lines > num_expected_lines:
-      print "New help line:"
-      print actual_lines[num_expected_lines]
+      print("New help line:")
+      print(actual_lines[num_expected_lines])
     elif num_expected_lines > num_actual_lines:
-      print "Missing expected help line:"
-      print expected_lines[num_actual_lines]
+      print("Missing expected help line:")
+      print(expected_lines[num_actual_lines])
     else:
-      print "Bug in this test -- discrepancy detected but not found."
+      print("Bug in this test -- discrepancy detected but not found.")
 
   return False
 
@@ -108,7 +108,7 @@ class TestCase(unittest.TestCase):
   def assertRaisesWithRegexpMatch(self, exception, regexp, fn, *args, **kwargs):
     try:
       fn(*args, **kwargs)
-    except exception, why:
+    except exception as why:
       self.assertTrue(re.search(regexp, str(why)),
                       "'%s' does not match '%s'" % (regexp, why))
       return

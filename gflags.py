@@ -216,13 +216,13 @@ EXAMPLE USAGE:
   def main(argv):
     try:
       argv = FLAGS(argv)  # parse flags
-    except gflags.FlagsError, e:
-      print '%s\\nUsage: %s ARGS\\n%s' % (e, sys.argv[0], FLAGS)
+    except gflags.FlagsError as e:
+      print('%s\\nUsage: %s ARGS\\n%s' % (e, sys.argv[0], FLAGS))
       sys.exit(1)
-    if FLAGS.debug: print 'non-flag arguments:', argv
-    print 'Happy Birthday', FLAGS.name
+    if FLAGS.debug: print('non-flag arguments:', argv)
+    print('Happy Birthday ' + FLAGS.name)
     if FLAGS.age is not None:
-      print 'You are a %d year old %s' % (FLAGS.age, FLAGS.gender)
+      print('You are a %d year old %s' % (FLAGS.age, FLAGS.gender))
 
   if __name__ == '__main__':
     main(sys.argv)
@@ -386,10 +386,6 @@ a list of values, separated by a special token).
 
 This module requires at least python 2.2.1 to run.
 """
-from __future__ import print_function
-from builtins import str
-from builtins import range
-from builtins import object
 
 import cgi
 import getopt
@@ -398,7 +394,7 @@ import re
 import string
 import struct
 import sys
-from future.utils import with_metaclass
+
 # pylint: disable-msg=C6204
 try:
   import fcntl
@@ -417,6 +413,23 @@ import gflags_validators
 # Are we running under pychecker?
 _RUNNING_PYCHECKER = 'pychecker.python' in sys.modules
 
+
+# Python 2/3 compatibility
+def with_metaclass(meta, *bases):
+    class metaclass(meta):
+        __call__ = type.__call__
+        __init__ = type.__init__
+        def __new__(cls, name, this_bases, d):
+            if this_bases is None:
+                return type.__new__(cls, name, (), d)
+            return meta(name, bases, d)
+    return metaclass('temporary_class', None, {})
+
+# Python 3's str is unicode
+try:
+    unicode
+except NameError:
+    unicode = str
 
 def _GetCallingModuleObjectAndName():
   """Returns the module that's calling into this module.
@@ -1719,8 +1732,8 @@ class FlagValues(object):
     """
     outfile = outfile or sys.stdout
 
-    outfile.write('<?xml version=\"1.0\"?>\n')
-    outfile.write('<AllFlags>\n')
+    outfile.write(u'<?xml version=\"1.0\"?>\n'.encode('ascii'))
+    outfile.write(u'<AllFlags>\n'.encode('ascii'))
     indent = '  '
     _WriteSimpleXMLElement(outfile, 'program', os.path.basename(sys.argv[0]),
                            indent)
@@ -1747,7 +1760,7 @@ class FlagValues(object):
         flag.WriteInfoInXMLFormat(outfile, module_name,
                                   is_key=is_key, indent=indent)
 
-    outfile.write('</AllFlags>\n')
+    outfile.write(u'</AllFlags>\n'.encode('ascii'))
     outfile.flush()
 
   def AddValidator(self, validator):
@@ -1774,7 +1787,7 @@ def _StrOrUnicode(value):
   try:
     return str(value)
   except UnicodeEncodeError:
-    return str(value)
+    return unicode(value)
 
 
 def _MakeXMLSafe(s):
@@ -1787,7 +1800,7 @@ def _MakeXMLSafe(s):
   # XML 1.1, which allows such chars, if they're entity-escaped (&#xHH;).
   s = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f]', '', s)
   # Convert non-ascii characters to entities.  Note: requires python >=2.3
-  s = s.encode('ascii', 'xmlcharrefreplace')   # u'\xce\x88' -> 'u&#904;'
+  s = s.encode('ascii', 'xmlcharrefreplace').decode('ascii')   # u'\xce\x88' -> 'u&#904;'
   return s
 
 
@@ -1806,7 +1819,7 @@ def _WriteSimpleXMLElement(outfile, name, value, indent):
     # Display boolean values as the C++ flag library does: no caps.
     value_str = value_str.lower()
   safe_value_str = _MakeXMLSafe(value_str)
-  outfile.write('%s<%s>%s</%s>\n' % (indent, name, safe_value_str, name))
+  outfile.write(('%s<%s>%s</%s>\n' % (indent, name, safe_value_str, name)).encode('utf-8'))
 
 
 class Flag(object):
@@ -1954,7 +1967,7 @@ class Flag(object):
       is_key: A boolean, True iff this flag is key for main module.
       indent: A string that is prepended to each generated line.
     """
-    outfile.write(indent + '<flag>\n')
+    outfile.write((indent + '<flag>\n').encode('utf-8'))
     inner_indent = indent + '  '
     if is_key:
       _WriteSimpleXMLElement(outfile, 'key', 'yes', inner_indent)
@@ -1978,7 +1991,7 @@ class Flag(object):
     _WriteSimpleXMLElement(outfile, 'type', self.Type(), inner_indent)
     # Print extra flag features this flag may have.
     self._WriteCustomInfoInXMLFormat(outfile, inner_indent)
-    outfile.write(indent + '</flag>\n')
+    outfile.write((indent + '</flag>\n').encode('utf-8'))
 
   def _WriteCustomInfoInXMLFormat(self, outfile, indent):
     """Writes extra info about this flag, in XML format.

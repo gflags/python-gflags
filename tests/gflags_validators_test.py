@@ -66,7 +66,8 @@ class SimpleValidatorTest(googletest.TestCase):
     self.assertEquals(None, self.flag_values.test_flag)
     self.flag_values.test_flag = 2
     self.assertEquals(2, self.flag_values.test_flag)
-    self.assertEquals([None, 2], self.call_args)
+    self.assertEquals([None, 2][0], self.call_args[0])
+    self.assertEquals([None, 2][1], self.call_args[1])
 
   def testDefaultValueNotUsedSuccess(self):
     def Checker(x):
@@ -119,7 +120,7 @@ class SimpleValidatorTest(googletest.TestCase):
     try:
       self.flag_values.test_flag = 2
       raise AssertionError('gflags.IllegalFlagValue expected')
-    except gflags.IllegalFlagValue, e:
+    except gflags.IllegalFlagValue as e:
       self.assertEquals('flag --test_flag=2: Errors happen', str(e))
     self.assertEquals([1, 2], self.call_args)
 
@@ -141,7 +142,7 @@ class SimpleValidatorTest(googletest.TestCase):
     try:
       self.flag_values.test_flag = 2
       raise AssertionError('gflags.IllegalFlagValue expected')
-    except gflags.IllegalFlagValue, e:
+    except gflags.IllegalFlagValue as e:
       self.assertEquals('flag --test_flag=2: Specific message', str(e))
     self.assertEquals([1, 2], self.call_args)
 
@@ -160,7 +161,7 @@ class SimpleValidatorTest(googletest.TestCase):
     try:
       self.flag_values(argv)
       raise AssertionError('gflags.IllegalFlagValue expected')
-    except gflags.IllegalFlagValue, e:
+    except gflags.IllegalFlagValue as e:
       self.assertEquals('flag --test_flag=1: Errors happen', str(e))
     self.assertEquals([1], self.call_args)
 
@@ -179,7 +180,7 @@ class SimpleValidatorTest(googletest.TestCase):
     try:
       self.flag_values(argv)
       raise AssertionError('IllegalFlagValue expected')
-    except gflags.IllegalFlagValue, e:
+    except gflags.IllegalFlagValue as e:
       self.assertEquals('flag --test_flag=1: Specific message', str(e))
     self.assertEquals([1], self.call_args)
 

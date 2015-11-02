@@ -38,10 +38,6 @@ page.
 Usage:
   gflags2man <program> [program] ...
 """
-from __future__ import print_function
-from builtins import str
-from builtins import range
-from builtins import object
 
 # TODO(csilvers): work with windows paths (\) as well as unix (/)
 
@@ -51,6 +47,8 @@ from builtins import object
 # Inspired by help2man.
 
 
+
+from __future__ import print_function
 
 import os
 import re
