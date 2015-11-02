@@ -250,7 +250,6 @@ class WriteFlagHelpInXMLFormatTest(googletest.TestCase):
         ' </flag>\n').replace('LIST_SEPARATORS',
                               _ListSeparatorsInXMLFormat(string.whitespace,
                                                          indent='   '))
-    # TODO: Why is Python 3 returning a different sort order here?
     self._CheckFlagHelpInXML('dirs', 'tool', expected_output)
 
   def testFlagHelpInXML_MultiString(self):
@@ -515,7 +514,6 @@ class WriteHelpInXMLFormatTest(googletest.TestCase):
     expected_output_template += EXPECTED_HELP_XML_END
 
     # XML representation of the whitespace list separators.
-    # TODO: Why is Python 3 returning a different sort order here?
     whitespace_separators = _ListSeparatorsInXMLFormat(string.whitespace,
                                                        indent='    ')
     expected_output = (

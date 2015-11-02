@@ -763,7 +763,7 @@ class FlagsUnitTest(googletest.TestCase):
   --[no]helpshort: show usage only for this module
   --[no]helpxml: like --help, but generates XML output
 """
-    # TODO: Bizarre Python 2 / 3 difference here
+    # TODO: Try to fix Python 3 frozen importlib name
     if 'show this help' in helpstr:
         expected_help = expected_help.replace('  --kwery',
                                               help_help + '  --kwery')

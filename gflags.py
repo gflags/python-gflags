@@ -2701,7 +2701,7 @@ class WhitespaceSeparatedListParser(BaseListParser):
     BaseListParser.WriteCustomInfoInXMLFormat(self, outfile, indent)
     separators = list(string.whitespace)
     separators.sort()
-    for ws_char in string.whitespace:
+    for ws_char in separators:
       _WriteSimpleXMLElement(outfile, 'list_separator', repr(ws_char), indent)
 
 
